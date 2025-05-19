@@ -1,39 +1,110 @@
 import random
 
-from scipy.stats import false_discovery_control
+stages = [
+    """
+      +---+
+      |   |
+          |
+          |
+          |
+          |
+    =========
+    """,
+    """
+      +---+
+      |   |
+      O   |
+          |
+          |
+          |
+    =========
+    """,
+    """
+      +---+
+      |   |
+      O   |
+      |   |
+          |
+          |
+    =========
+    """,
+    """
+      +---+
+      |   |
+      O   |
+     /|   |
+          |
+          |
+    =========
+    """,
+    """
+      +---+
+      |   |
+      O   |
+     /|\\  |
+          |
+          |
+    =========
+    """,
+    """
+      +---+
+      |   |
+      O   |
+     /|\\  |
+     /    |
+          |
+    =========
+    """,
+    """
+      +---+
+      |   |
+      O   |
+     /|\\  |
+     / \\  |
+          |
+    =========
+    """
+]
 
-word_list = ["aardvack", "baboon", "camel"]
-
+word_list = ["aardvark", "baboon", "camel"]
 chosen_word = random.choice(word_list)
-print(chosen_word)
 
-placeholder = ""
-word_length = len(chosen_word)
-for position in range(word_length):
-    placeholder += "_"
-
+# Game setup
+placeholder = "_" * len(chosen_word)
+lives = 6
 game_over = False
-correct_letters = []
+guessed_letters = []
+
+print("Welcome to Hangman!")
 
 while not game_over:
     guess = input("Guess a letter: ").lower()
 
-    display = ""
+    if guess in guessed_letters:
+        print(f"You already guessed '{guess}'. Try a different letter.")
+        continue
 
-    for letter in chosen_word:
-        if letter == guess:
-            display += letter
-            correct_letters.append(guess)
+    guessed_letters.append(guess)
 
-        elif letter in correct_letters:
-            display += letter
+    if guess in chosen_word:
+        new_placeholder = ""
+        for i in range(len(chosen_word)):
+            if chosen_word[i] == guess:
+                new_placeholder += guess
+            else:
+                new_placeholder += placeholder[i]
+        placeholder = new_placeholder
+    else:
+        lives -= 1
+        print(f"'{guess}' is not in the word. You lose a life.")
 
-        else:
-            display += "_"
+    print(stages[6 - lives])
+    print("Word: ", placeholder)
 
-    print(display)
-
-    if "_" not in display:
+    if "_" not in placeholder:
         game_over = True
-
-
+        print("You win!")
+    elif lives == 0:
+        game_over = True
+        print("You lose!")
+        print(f"The word was: {chosen_word}")
